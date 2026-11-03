@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { LoaderCircle } from "lucide-react";
 import HeroBanner from "@/components/home/HeroBanner";
+import HowBorrowingWorks from "@/components/home/HowBorrowingWorks";
+import ReadersNote from "@/components/home/ReadersNote";
 
 export default function Home() {
   return (
@@ -21,6 +23,9 @@ export default function Home() {
       >
         <HeroBanner />
       </Suspense>
+
+      <HowBorrowingWorks />
+      <ReadersNote />
     </main>
   );
 }
