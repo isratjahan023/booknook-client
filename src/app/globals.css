@@ -132,3 +132,44 @@
   --font-sans: var(--font-booknook-body);
   --font-serif: var(--font-booknook-heading);
 }
+.booknook-hero {
+  --swiper-navigation-color: #23452f;
+  --swiper-navigation-size: 20px;
+  --swiper-pagination-color: #23452f;
+  --swiper-pagination-bullet-inactive-color: #a9af91;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+}
+
+.booknook-hero .swiper-button-prev,
+.booknook-hero .swiper-button-next {
+  width: 40px;
+  height: 44px;
+}
+
+.booknook-hero .swiper-button-prev {
+  left: 0;
+}
+
+.booknook-hero .swiper-button-next {
+  right: 0;
+}
+
+.booknook-hero .swiper-pagination {
+  bottom: 16px;
+}
+
+.booknook-hero .swiper-pagination-bullet {
+  width: 9px;
+  height: 9px;
+}
+
+.booknook-hero .swiper-pagination-bullet:focus-visible {
+  outline: 2px solid #23452f;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booknook-hero .swiper-wrapper {
+    transition-duration: 0ms !important;
+  }
+}
