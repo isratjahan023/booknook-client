@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const headingFont = Cormorant_Garamond({
+  variable: "--font-booknook-heading",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bodyFont = DM_Sans({
+  variable: "--font-booknook-body",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -29,9 +32,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${headingFont.variable} ${bodyFont.variable}`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-screen flex-col bg-[#faf7ef] font-sans text-[#23452f] antialiased">
         <Navbar />
         {children}
       </body>
