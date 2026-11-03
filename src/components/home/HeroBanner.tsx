@@ -39,52 +39,62 @@ export default function HeroBanner() {
   return (
     <section
       aria-label="Discover BookNook"
-      className="border-b border-[#23452f]/15"
+      className="relative isolate overflow-hidden border-b border-[#23452f]/15 bg-[#faf7ef] text-[#23452f]"
     >
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <Swiper
-          modules={[Navigation, Pagination, A11y]}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          rewind
-          className="booknook-hero"
-        >
-          {slides.map((slide, index) => (
+      {/* Full-width background on every screen */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+      >
+        <Image
+          src="/images/hero-bookshelf.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+
+        {/* Extra softness on smaller screens */}
+        <div className="absolute inset-0 bg-[#faf7ef]/40 lg:bg-transparent" />
+      </div>
+
+      <Swiper
+        modules={[Navigation, Pagination, A11y]}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        rewind
+        className="booknook-hero relative z-10 w-full min-w-0"
+      >
+        {slides.map((slide, index) => {
+          const Heading = index === 0 ? "h1" : "h2";
+
+          return (
             <SwiperSlide key={slide.eyebrow}>
-              <div className="grid items-center gap-10 px-5 pt-10 pb-16 sm:px-12 lg:grid-cols-2 lg:gap-8 lg:pt-12">
-                <div className="min-w-0">
-                  <p className="mb-5 text-xs font-medium tracking-[0.2em] text-[#526448] uppercase">
+              <div className="mx-auto grid w-full max-w-[1600px] min-w-0 items-center gap-8 px-12 pt-10 pb-14 sm:px-16 md:grid-cols-[48%_52%] md:gap-0 md:pt-6 md:pb-12 lg:px-20">
+                {/* Text */}
+                <div className="relative z-20 min-w-0 py-4 md:pr-4 lg:py-12 lg:pr-8">
+                  <p className="mb-5 text-xs font-medium tracking-[0.16em] text-[#405444] uppercase">
                     {slide.eyebrow}
                   </p>
 
-                  {index === 0 ? (
-                    <h1 className="font-serif text-5xl leading-[1.02] font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-                      {slide.lines.map((line) => (
-                        <span key={line} className="block">
-                          {line}
-                        </span>
-                      ))}
-                      <em className="block">{slide.ending}</em>
-                    </h1>
-                  ) : (
-                    <h2 className="font-serif text-5xl leading-[1.02] font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-                      {slide.lines.map((line) => (
-                        <span key={line} className="block">
-                          {line}
-                        </span>
-                      ))}
-                      <em className="block">{slide.ending}</em>
-                    </h2>
-                  )}
+                  <Heading className="font-serif text-[clamp(2.5rem,4.8vw,5.5rem)] leading-[1.05] font-semibold tracking-tight">
+                    {slide.lines.map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
 
-                  <p className="mt-6 max-w-md text-sm leading-7 text-[#637367] sm:text-base">
+                    <em className="block">{slide.ending}</em>
+                  </Heading>
+
+                  <p className="mt-6 max-w-md text-sm leading-7 text-[#405444] lg:text-base">
                     {slide.description}
                   </p>
 
                   <Link
                     href="/books"
-                    className={`${buttonVariants()} mt-7 h-11 gap-3 bg-[#23452f] px-6 text-[#faf7ef] hover:bg-[#193522]`}
+                    className={`${buttonVariants()} mt-7 h-12 gap-3 bg-[#23452f]! px-6 text-[#faf7ef]! hover:bg-[#193522]!`}
                   >
                     Browse Books
                     <ArrowUpRight
@@ -94,29 +104,26 @@ export default function HeroBanner() {
                   </Link>
                 </div>
 
-                <div className="relative mx-auto w-full max-w-md self-end">
+                {/* Reader and responsive green backdrop */}
+                <div className="relative mx-auto aspect-square w-full max-w-[520px] self-end md:max-w-none md:aspect-[1/1.12]">
                   <div
                     aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 top-8 rounded-t-full bg-[#35482d]"
+                    className="absolute inset-x-[2%] bottom-0 top-[8%] rounded-t-full bg-[#aeb98e]/80"
                   />
 
-                  <div className="relative aspect-square">
-                    <Image
-                      src="/images/hero-reader.png"
-                      alt="A smiling reader enjoying an open book"
-                      fill
-                      sizes="(max-width: 1023px) 90vw, 448px"
-                      className="object-contain object-bottom"
-                    />
-                  </div>
-
-        
+                  <Image
+                    src="/images/hero-reader.png"
+                    alt="A smiling reader enjoying an open book"
+                    fill
+                    sizes="(min-width: 1600px) 750px, (min-width: 768px) 52vw, 90vw"
+                    className="object-contain object-bottom"
+                  />
                 </div>
               </div>
             </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+          );
+        })}
+      </Swiper>
     </section>
   );
 }
