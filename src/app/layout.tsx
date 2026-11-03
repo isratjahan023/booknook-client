@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
 
 const headingFont = Cormorant_Garamond({
   variable: "--font-booknook-heading",
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col bg-[#faf7ef] font-sans text-[#23452f] antialiased">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
