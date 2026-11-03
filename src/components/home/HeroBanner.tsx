@@ -110,9 +110,7 @@ export default function HeroBanner() {
                     />
                   </div>
 
-                  <div className="absolute right-0 top-12 max-w-36 rotate-6 rounded-sm bg-[#fff8e8] px-4 py-3 text-center font-serif text-lg leading-snug text-[#23452f] shadow-md sm:-right-3">
-                    Your next favorite is waiting.
-                  </div>
+        
                 </div>
               </div>
             </SwiperSlide>
