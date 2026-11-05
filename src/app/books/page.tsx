@@ -49,12 +49,15 @@ export default function BooksPage() {
                 className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#23452f]/10 bg-white"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={book.image}
-                  alt={`${book.title} cover`}
-                  loading="lazy"
-                  className="h-64 w-full bg-[#eeeee5] object-contain p-5"
-                />
+<div className="h-72 w-full overflow-hidden bg-[#eeeee5]">
+  {/* eslint-disable-next-line @next/next/no-img-element */}
+  <img
+    src={book.image}
+    alt={`${book.title} cover`}
+    loading="lazy"
+    className="h-full w-full object-cover"
+  />
+</div>
 
                 <div className="flex flex-1 flex-col p-6">
                   <p className="text-xs font-semibold uppercase tracking-wider text-[#75815c]">

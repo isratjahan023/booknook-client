@@ -38,28 +38,39 @@ export default function NewArrivals() {
   return (
     <section
       aria-labelledby="arrivals-title"
-      className="px-5 py-16 lg:px-8"
+      className="bg-[#faf7ef] px-5 py-14 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
-        <p className="text-sm font-medium uppercase tracking-widest text-[#75815c]">
-          Fresh on our shelves
-        </p>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-sm uppercase tracking-widest text-[#75815c]">
+              Fresh on our shelves
+            </p>
 
-        <h2
-          id="arrivals-title"
-          className="mt-3 font-serif text-4xl font-semibold"
-        >
-          New Arrivals
-        </h2>
+            <h2
+              id="arrivals-title"
+              className="mt-3 font-serif text-4xl font-semibold text-[#23452f]"
+            >
+              New Arrivals
+            </h2>
 
-        <p className="mt-3 max-w-xl text-[#61705e]">
-          Discover the latest books shared by our reading community.
-        </p>
+            <p className="mt-3 text-[#61705e]">
+              Discover the latest books shared by our reading community.
+            </p>
+          </div>
+
+          <Link
+            href="/books"
+            className="shrink-0 text-sm font-semibold text-[#23452f] underline underline-offset-4"
+          >
+            See All Books →
+          </Link>
+        </div>
 
         {loading ? (
           <div
             role="status"
-            className="flex min-h-48 items-center justify-center gap-3"
+            className="flex min-h-60 items-center justify-center gap-3"
           >
             <LoaderCircle
               className="size-6 animate-spin"
@@ -72,40 +83,51 @@ export default function NewArrivals() {
             {error}
           </p>
         ) : books.length === 0 ? (
-          <p className="mt-8 rounded-2xl border border-[#23452f]/10 bg-white p-8">
+          <p className="mt-8 text-[#61705e]">
             Our shelves are waiting for their first story.
           </p>
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            role="region"
+            aria-label="New arrivals bookshelf"
+            tabIndex={0}
+            className="mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-5 focus-visible:outline-2 focus-visible:outline-[#23452f] lg:grid lg:grid-cols-6 lg:gap-6"
+          >
             {books.map((book) => (
               <article
                 key={book._id}
-                className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#23452f]/10 bg-white"
+                className="flex w-40 shrink-0 snap-start flex-col sm:w-44 lg:w-auto lg:min-w-0"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={book.image}
-                  alt={`${book.title} cover`}
-                  loading="lazy"
-                  className="h-64 w-full bg-[#eeeee5] object-contain p-5"
-                />
+                <Link
+                  href={`/books/${book._id}`}
+                  aria-label={`View ${book.title}`}
+                  className="flex h-64 items-end justify-center"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={book.image}
+                    alt={`${book.title} cover`}
+                    loading="lazy"
+                    className="max-h-full max-w-full rounded-sm object-contain shadow-md"
+                  />
+                </Link>
 
-                <div className="flex flex-1 flex-col p-6">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-[#75815c]">
+                <div className="flex flex-1 flex-col pt-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[#75815c]">
                     {book.category}
                   </p>
 
-                  <h3 className="mt-2 font-serif text-2xl font-semibold">
+                  <h3 className="mt-2 line-clamp-2 font-serif text-lg font-semibold leading-snug text-[#23452f]">
                     {book.title}
                   </h3>
 
-                  <p className="mb-6 mt-2 text-sm text-[#61705e]">
+                  <p className="mb-4 mt-1 text-xs leading-5 text-[#61705e]">
                     By {book.author}
                   </p>
 
                   <Link
                     href={`/books/${book._id}`}
-                    className="mt-auto rounded-xl bg-[#23452f] px-4 py-3 text-center text-sm font-medium text-white hover:bg-[#193522]"
+                    className="mt-auto rounded-lg bg-[#23452f] px-3 py-2.5 text-center text-sm font-medium text-white hover:bg-[#193522]"
                   >
                     View Details
                   </Link>
@@ -114,15 +136,6 @@ export default function NewArrivals() {
             ))}
           </div>
         )}
-
-        <div className="mt-9 text-center">
-          <Link
-            href="/books"
-            className="inline-block rounded-xl border border-[#23452f] px-6 py-3 text-sm font-medium hover:bg-[#e8ebdf]"
-          >
-            See All Books
-          </Link>
-        </div>
       </div>
     </section>
   );
