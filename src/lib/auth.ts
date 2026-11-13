@@ -5,6 +5,7 @@ import { db, mongoClient } from "@/lib/mongodb";
 
 export const auth = betterAuth({
   appName: "BookNook",
+
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
 
@@ -16,6 +17,14 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 6,
     autoSignIn: false,
+  },
+
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      prompt: "select_account",
+    },
   },
 
   plugins: [jwt()],

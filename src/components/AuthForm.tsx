@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export default function AuthForm({
   mode,
@@ -221,6 +222,7 @@ export default function AuthForm({
             {loading ? "Please wait..." : isSignup ? "Register" : "Log in"}
           </button>
         </form>
+        <GoogleLoginButton isSignup={isSignup} />
 
         <p className="mt-6 text-center text-sm text-[#667168]">
           {isSignup ? "Already have an account? " : "New to BookNook? "}
