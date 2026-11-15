@@ -101,14 +101,16 @@ export default function NewArrivals() {
                 <Link
                   href={`/books/${book._id}`}
                   aria-label={`View ${book.title}`}
-                  className="flex h-64 items-end justify-center"
+                  className="flex h-64 shrink-0 items-center justify-center"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={book.image}
                     alt={`${book.title} cover`}
                     loading="lazy"
-                    className="max-h-full max-w-full rounded-sm object-contain shadow-md"
+                    width={160}
+                    height={256}
+                    className="h-64 w-40 shrink-0 rounded-sm object-cover shadow-md"
                   />
                 </Link>
 
