@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BookOpen, Menu, X, UserRound } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const publicLinks = [
   { label: "Home", href: "/" },
@@ -21,9 +22,14 @@ const privateLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const headerRef = useRef<HTMLElement>(null);
+  const mobileButtonRef = useRef<HTMLButtonElement>(null);
 
-  const { data: session, isPending, error: sessionError } =
-    authClient.useSession();
+  const {
+    data: session,
+    isPending,
+    error: sessionError,
+  } = authClient.useSession();
 
   const [isOpen, setIsOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -34,7 +40,14 @@ export default function Navbar() {
     ? [...publicLinks, ...privateLinks]
     : publicLinks;
 
+  function closeAccountMenus() {
+    headerRef.current
+      ?.querySelectorAll("details[open]")
+      .forEach((details) => details.removeAttribute("open"));
+  }
+
   function closeMenu() {
+    closeAccountMenus();
     setIsOpen(false);
   }
 
@@ -45,6 +58,8 @@ export default function Navbar() {
   }
 
   async function handleLogout() {
+    if (loggingOut) return;
+
     setError("");
     setLoggingOut(true);
 
@@ -57,7 +72,7 @@ export default function Navbar() {
       }
 
       closeMenu();
-      router.push("/");
+      router.replace("/");
       router.refresh();
     } catch {
       setError("Could not log out. Please try again.");
@@ -73,7 +88,7 @@ export default function Navbar() {
         onClick={closeMenu}
         className={`${buttonVariants({
           variant: "outline",
-        })} border-[#23452f] bg-transparent text-[#23452f] hover:bg-[#e8ebdf]`}
+        })} rounded-full`}
       >
         Login
       </Link>
@@ -81,7 +96,7 @@ export default function Navbar() {
       <Link
         href="/register"
         onClick={closeMenu}
-        className={`${buttonVariants()} bg-[#23452f] text-[#faf7ef] hover:bg-[#193522]`}
+        className={`${buttonVariants()} rounded-full`}
       >
         Register
       </Link>
@@ -91,7 +106,14 @@ export default function Navbar() {
   function renderAccount() {
     if (isPending) {
       return (
-        <span role="status" className="text-sm">
+        <span
+          role="status"
+          className="flex items-center gap-2 text-xs text-muted-foreground"
+        >
+          <span
+            aria-hidden="true"
+            className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+          />
           Loading account...
         </span>
       );
@@ -99,7 +121,10 @@ export default function Navbar() {
 
     if (sessionError) {
       return (
-        <span role="alert" className="text-sm text-red-700">
+        <span
+          role="alert"
+          className="max-w-44 text-xs text-destructive"
+        >
           Unable to load account. Refresh to retry.
         </span>
       );
@@ -110,38 +135,65 @@ export default function Navbar() {
     }
 
     return (
-      <details className="relative">
-        <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full p-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#23452f] [&::-webkit-details-marker]:hidden">
+      <details
+        className="relative"
+        onBlur={(event) => {
+          const nextTarget = event.relatedTarget;
+
+          if (
+            !nextTarget ||
+            !event.currentTarget.contains(nextTarget as Node)
+          ) {
+            event.currentTarget.removeAttribute("open");
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            event.stopPropagation();
+
+            event.currentTarget.removeAttribute("open");
+            event.currentTarget.querySelector("summary")?.focus();
+          }
+        }}
+      >
+        <summary className="flex cursor-pointer list-none items-center rounded-full p-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-details-marker]:hidden">
           {user.image ? (
-            // Profile URLs can use different image hosts.
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={user.image}
-              alt={`${user.name}'s profile`}
+              alt={`${user.name || "User"}'s profile`}
               referrerPolicy="no-referrer"
-              className="size-10 rounded-full border border-[#23452f]/20 object-cover"
+              width={40}
+              height={40}
+              className="size-10 rounded-full border border-border object-cover"
             />
           ) : (
-            <span className="flex size-10 items-center justify-center rounded-full bg-[#e8ebdf]">
+            <span className="flex size-10 items-center justify-center rounded-full border border-border bg-secondary text-secondary-foreground">
               <UserRound className="size-5" aria-hidden="true" />
             </span>
           )}
-          <span className="sr-only">Open account menu</span>
+
+          <span className="sr-only">Open account options</span>
         </summary>
 
-        <div className="absolute right-0 z-50 mt-3 w-60 rounded-xl border border-[#23452f]/15 bg-[#faf7ef] p-3 shadow-lg">
-          <p className="break-words px-3 py-2 font-semibold">
-            {user.name}
-          </p>
+        <div className="absolute right-0 z-50 mt-3 w-60 rounded-2xl border border-border bg-popover p-2 text-popover-foreground shadow-xl">
+          <div className="mb-2 border-b border-border px-3 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Your account
+            </p>
+
+            <p className="mt-1 break-words text-sm font-semibold">
+              {user.name || "Reader"}
+            </p>
+          </div>
 
           <Link
             href="/profile"
-            onClick={(event) => {
-              event.currentTarget.closest("details")?.removeAttribute("open");
-              closeMenu();
-            }}
-            className="block rounded-md px-3 py-2 text-sm hover:bg-[#e8ebdf]"
+            onClick={closeMenu}
+            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
           >
+            <UserRound className="size-4" aria-hidden="true" />
             My Profile
           </Link>
 
@@ -149,7 +201,7 @@ export default function Navbar() {
             type="button"
             disabled={loggingOut}
             onClick={handleLogout}
-            className="mt-1 w-full rounded-md px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50 disabled:opacity-60"
+            className="mt-1 w-full rounded-xl px-3 py-2.5 text-left text-sm text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loggingOut ? "Logging out..." : "Logout"}
           </button>
@@ -159,27 +211,39 @@ export default function Navbar() {
   }
 
   return (
-    <header className="relative z-40 border-b border-[#23452f]/10 bg-[#faf7ef] text-[#23452f]">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
+    <header
+      ref={headerRef}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && isOpen) {
+          closeMenu();
+          mobileButtonRef.current?.focus();
+        }
+      }}
+      className="relative z-40 border-b border-border bg-background text-foreground"
+    >
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
           onClick={closeMenu}
           aria-label="BookNook home"
-          className="flex shrink-0 items-center gap-2.5"
+          className="flex shrink-0 items-center gap-2 sm:gap-2.5"
         >
-          <BookOpen
-            className="size-9"
-            strokeWidth={1.4}
-            aria-hidden="true"
-          />
-          <span className="font-serif text-3xl font-semibold tracking-tight">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
+            <BookOpen
+              className="size-6"
+              strokeWidth={1.5}
+              aria-hidden="true"
+            />
+          </span>
+
+          <span className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
             BookNook
           </span>
         </Link>
 
         <nav
           aria-label="Main navigation"
-          className="hidden items-center gap-5 lg:flex"
+          className="hidden items-center gap-1 lg:flex"
         >
           {links.map(({ label, href }) => {
             const active = isActive(href);
@@ -188,11 +252,12 @@ export default function Navbar() {
               <Link
                 key={href}
                 href={href}
+                onClick={closeMenu}
                 aria-current={active ? "page" : undefined}
-                className={`border-b-2 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
                   active
-                    ? "border-[#b58a45]"
-                    : "border-transparent hover:border-[#b58a45]/50"
+                    ? "bg-secondary text-secondary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`}
               >
                 {label}
@@ -202,56 +267,77 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           {renderAccount()}
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsOpen((previous) => !previous)}
-          aria-label={isOpen ? "Close navigation" : "Open navigation"}
-          aria-expanded={isOpen}
-          aria-controls="mobile-navigation"
-          className="flex size-11 items-center justify-center rounded-md hover:bg-[#e8ebdf] lg:hidden"
-        >
-          {isOpen ? (
-            <X className="size-6" aria-hidden="true" />
-          ) : (
-            <Menu className="size-6" aria-hidden="true" />
-          )}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle />
+
+          <button
+            ref={mobileButtonRef}
+            type="button"
+            onClick={() => {
+              closeAccountMenus();
+              setIsOpen((previous) => !previous);
+            }}
+            aria-label={isOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
+            className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >
+            {isOpen ? (
+              <X className="size-5" aria-hidden="true" />
+            ) : (
+              <Menu className="size-5" aria-hidden="true" />
+            )}
+          </button>
+        </div>
       </div>
 
       {error && (
-        <p role="alert" className="px-5 pb-3 text-sm text-red-700">
-          {error}
-        </p>
+        <div className="mx-auto max-w-7xl px-5 pb-3 lg:px-8">
+          <p
+            role="alert"
+            className="rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
+            {error}
+          </p>
+        </div>
       )}
 
-      {isOpen && (
-        <nav
-          id="mobile-navigation"
-          aria-label="Mobile navigation"
-          className="space-y-2 border-t border-[#23452f]/10 px-5 py-5 lg:hidden"
-        >
-          {links.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={closeMenu}
-              aria-current={isActive(href) ? "page" : undefined}
-              className={`block rounded-md px-3 py-3 text-sm font-medium hover:bg-[#e8ebdf] ${
-                isActive(href) ? "bg-[#e8ebdf]" : ""
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
+      <nav
+        id="mobile-navigation"
+        aria-label="Mobile navigation"
+        hidden={!isOpen}
+        className="border-t border-border px-4 py-4 sm:px-6 lg:hidden"
+      >
+        <div className="space-y-1">
+          {links.map(({ label, href }) => {
+            const active = isActive(href);
 
-          <div className="flex justify-end gap-3 pt-3">
-            {renderAccount()}
-          </div>
-        </nav>
-      )}
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={closeMenu}
+                aria-current={active ? "page" : undefined}
+                className={`block rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-secondary text-secondary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-3 border-t border-border pt-4">
+          {renderAccount()}
+        </div>
+      </nav>
     </header>
   );
 }

@@ -173,3 +173,177 @@
     transition-duration: 0ms !important;
   }
 }
+/* BookNook typography and brand colours */
+@theme inline {
+  --font-sans: var(--font-booknook-body);
+  --font-serif: var(--font-booknook-heading);
+  --font-heading: var(--font-booknook-heading);
+}
+
+:root {
+  --background: #faf7ef;
+  --foreground: #23452f;
+  --card: #fffdf8;
+  --card-foreground: #23452f;
+  --popover: #fffdf8;
+  --popover-foreground: #23452f;
+  --primary: #23452f;
+  --primary-foreground: #faf7ef;
+  --secondary: #e8eddf;
+  --secondary-foreground: #23452f;
+  --muted: #f0eee5;
+  --muted-foreground: #63705e;
+  --accent: #e8eddf;
+  --accent-foreground: #23452f;
+  --border: #dce1d3;
+  --input: #d3dacb;
+  --ring: #6d805c;
+  --destructive: #b42332;
+}
+
+.dark {
+  --background: #101c17;
+  --foreground: #eeeede;
+  --card: #182820;
+  --card-foreground: #eeeede;
+  --popover: #1b2d23;
+  --popover-foreground: #eeeede;
+  --primary: #c5d6ac;
+  --primary-foreground: #142319;
+  --secondary: #24382b;
+  --secondary-foreground: #e9efdf;
+  --muted: #1d2e24;
+  --muted-foreground: #b0bda7;
+  --accent: #2a4031;
+  --accent-foreground: #edf2e6;
+  --border: #344637;
+  --input: #3e5141;
+  --ring: #bdcea3;
+  --destructive: #ff929b;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background: #b7c797;
+  color: #172b1e;
+}
+
+button:not(:disabled),
+summary {
+  cursor: pointer;
+}
+
+/* Existing page surfaces */
+.dark :is(
+  [class~="bg-[#faf7ef]"],
+  [class~="bg-[#fffdf7]"]
+) {
+  background-color: var(--background);
+}
+
+.dark :is(
+  [class~="bg-white"],
+  [class~="bg-[#e8ebdf]"]
+) {
+  background-color: var(--card);
+}
+
+/* Existing headings and copy */
+.dark :is(
+  [class~="text-[#23452f]"],
+  [class~="text-[#183d30]"],
+  [class~="text-[#234d3b]"]
+) {
+  color: var(--foreground);
+}
+
+.dark :is(
+  [class~="text-[#61705e]"],
+  [class~="text-[#637367]"],
+  [class~="text-[#667168]"],
+  [class~="text-[#66705e]"],
+  [class~="text-[#69735f]"],
+  [class~="text-[#75806a]"],
+  [class~="text-[#75815c]"],
+  [class~="text-[#647151]"],
+  [class~="text-[#627650]"],
+  [class~="text-[#405444]"],
+  [class~="text-[#526448]"],
+  [class~="text-[#58725b]"]
+) {
+  color: var(--muted-foreground);
+}
+
+/* Existing borders */
+.dark :is(
+  [class~="border-[#23452f]/10"],
+  [class~="border-[#23452f]/15"],
+  [class~="border-[#23452f]/20"],
+  [class~="border-[#23452f]/25"],
+  [class~="border-[#d6dfd5]"],
+  [class~="border-[#dce3d7]"]
+) {
+  border-color: var(--border);
+}
+
+/* Existing green buttons retain readable light labels */
+.dark :is(
+  [class~="bg-[#23452f]"],
+  [class~="bg-[#234d3b]"]
+) {
+  background-color: #31573e;
+  color: #faf7ef;
+}
+
+.dark [class~="hover:bg-[#e8ebdf]"]:hover {
+  background-color: var(--accent);
+}
+
+.dark :is(
+  [class~="hover:bg-[#193522]"],
+  [class~="hover:bg-[#183d30]"]
+):hover {
+  background-color: #416e4f;
+}
+
+/* Existing error and success messages */
+.dark .text-red-700 {
+  color: #ffb4bc;
+}
+
+.dark .bg-red-50 {
+  background-color: #3d2028;
+}
+
+.dark .hover\:bg-red-50:hover {
+  background-color: #482730;
+}
+
+.dark .bg-green-50 {
+  background-color: #203c2b;
+}
+
+.dark .text-green-800 {
+  color: #c5e7b9;
+}
+
+/* Hero navigation: the illustrated panels keep their soft colours */
+.dark .booknook-hero-v2 .swiper-button-prev,
+.dark .booknook-hero-v2 .swiper-button-next {
+  background: #182820;
+  color: #eeeede;
+  border-color: #405442;
+}
+
+.dark .booknook-hero-v2 .swiper-button-prev:hover,
+.dark .booknook-hero-v2 .swiper-button-next:hover {
+  background: #2a4031;
+}
+
+.dark .booknook-hero-v2 .swiper-pagination-bullet {
+  background: #c5d6ac;
+}

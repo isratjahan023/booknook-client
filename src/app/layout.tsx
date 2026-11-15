@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
+
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import ThemeProvider from "@/components/ThemeProvider";
 
 const headingFont = Cormorant_Garamond({
   variable: "--font-booknook-heading",
@@ -34,32 +36,42 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${headingFont.variable} ${bodyFont.variable}`}
     >
-      <body className="flex min-h-screen flex-col bg-[#faf7ef] font-sans text-[#23452f] antialiased">
-        <Suspense
-          fallback={
-            <header className="h-20 border-b border-[#23452f]/10 bg-[#faf7ef]" />
-          }
-        >
-          <Navbar />
-        </Suspense>
-
-        <Suspense
-          fallback={
-            <div
-              role="status"
-              className="flex min-h-[60vh] flex-1 items-center justify-center gap-3"
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        <ThemeProvider>
+          <div className="flex min-h-screen flex-col">
+            <Suspense
+              fallback={
+                <header className="h-20 border-b border-border bg-background" />
+              }
             >
-              <span className="size-6 animate-spin rounded-full border-2 border-[#23452f] border-t-transparent" />
-              Loading...
-            </div>
-          }
-        >
-          {children}
-        </Suspense>
+              <Navbar />
+            </Suspense>
 
-        <Footer />
+            <div className="flex-1">
+              <Suspense
+                fallback={
+                  <div
+                    role="status"
+                    className="flex min-h-[60vh] items-center justify-center gap-3"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
+                    />
+                    Loading...
+                  </div>
+                }
+              >
+                {children}
+              </Suspense>
+            </div>
+
+            <Footer />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

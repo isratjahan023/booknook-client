@@ -1,41 +1,60 @@
-import { BookOpen } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, BookOpen } from "lucide-react";
 
 export default function ReadersNote() {
   return (
     <section
       aria-labelledby="readers-note-heading"
-      className="bg-[#23452f] text-[#faf7ef]"
+      className="bg-background px-6 pb-16 sm:px-10 lg:px-12 lg:pb-24"
     >
-      <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-12 md:grid-cols-[1fr_2fr] lg:px-8">
-        <div>
-          <BookOpen
-            className="mb-4 size-9 text-[#d4dabc]"
-            strokeWidth={1.3}
-            aria-hidden="true"
-          />
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#23452f] px-7 py-12 text-[#faf7ef] sm:px-10 lg:px-14 lg:py-16">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full border border-white/10"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-36 right-10 size-80 rounded-full border border-white/10"
+        />
 
-          <h2
-            id="readers-note-heading"
-            className="font-serif text-4xl font-medium italic"
-          >
-            Reader’s Note
-          </h2>
+        <div className="relative grid items-center gap-10 md:grid-cols-[1.4fr_1fr]">
+          <div>
+            <div className="flex items-center gap-3 text-[#d4dabc]">
+              <BookOpen
+                className="size-5"
+                strokeWidth={1.5}
+                aria-hidden="true"
+              />
 
-          <div
-            aria-hidden="true"
-            className="mt-4 h-px w-12 bg-[#c5a367]"
-          />
-        </div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em]">
+                Reader’s note
+              </p>
+            </div>
 
-        <div className="border-l border-[#faf7ef]/25 pl-6 md:pl-10">
-          <p className="font-serif text-3xl leading-snug sm:text-4xl">
-            Make a little room for reading.
-          </p>
+            <h2
+              id="readers-note-heading"
+              className="mt-6 max-w-xl font-serif text-4xl font-medium leading-[1.12] sm:text-5xl"
+            >
+              A little less scrolling.
+              <br />
+              <em>A few more pages.</em>
+            </h2>
+          </div>
 
-          <p className="mt-4 max-w-xl text-sm leading-7 text-[#d4dabc]">
-            A quiet moment. A few more pages. A story that stays
-            with you. Find your next little escape at BookNook.
-          </p>
+          <div className="border-t border-white/20 pt-7 md:border-l md:border-t-0 md:pl-10 md:pt-0">
+            <p className="max-w-sm text-base leading-8 text-[#d4dabc]">
+              You don’t need a perfect reading routine. Just a quiet
+              moment and a book you want to come back to.
+            </p>
+
+            <Link
+              href="/books"
+              className="mt-7 inline-flex min-h-12 items-center gap-3 rounded-full bg-[#faf7ef] px-6 py-3 text-sm font-semibold text-[#23452f] transition-colors hover:bg-[#e8eddf] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            >
+              Find your next chapter
+              <ArrowUpRight className="size-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>
