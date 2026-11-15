@@ -3,6 +3,35 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
+function getSafeDestination() {
+  const next = new URLSearchParams(window.location.search).get("next");
+
+  if (
+    !next ||
+    !next.startsWith("/") ||
+    next.startsWith("//") ||
+    /[\\\u0000-\u001f\u007f]/.test(next)
+  ) {
+    return "/";
+  }
+
+  try {
+    const target = new URL(next, window.location.origin);
+
+    if (target.origin !== window.location.origin) {
+      return "/";
+    }
+
+    if (/^\/(?:login|register)(?:\/|$)/i.test(target.pathname)) {
+      return "/";
+    }
+
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return "/";
+  }
+}
+
 export default function GoogleLoginButton({
   isSignup = false,
 }: {
@@ -12,24 +41,34 @@ export default function GoogleLoginButton({
   const [error, setError] = useState("");
 
   async function handleGoogleLogin() {
+    if (loading) return;
+
     setLoading(true);
     setError("");
 
-    const next = new URLSearchParams(window.location.search).get("next");
+    const destination = getSafeDestination();
 
-    const safeNext =
-      next?.startsWith("/") &&
-      !next.startsWith("//") &&
-      !next.includes("\\")
-        ? next
-        : "/";
+    // Use the same destination for existing and new Google users.
+    const callbackURL = new URL(
+      destination,
+      window.location.origin
+    ).href;
+
+    const errorURL = new URL(
+      isSignup ? "/register" : "/login",
+      window.location.origin
+    );
+
+    if (destination !== "/") {
+      errorURL.searchParams.set("next", destination);
+    }
 
     try {
       const result = await authClient.signIn.social({
         provider: "google",
-        callbackURL: isSignup ? "/" : safeNext,
-        newUserCallbackURL: isSignup ? "/" : safeNext,
-        errorCallbackURL: isSignup ? "/register" : "/login",
+        callbackURL,
+        newUserCallbackURL: callbackURL,
+        errorCallbackURL: errorURL.href,
       });
 
       if (result.error) {

@@ -1,10 +1,41 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+
+// Only allow redirects within this website.
+function getNextPath() {
+  const value = new URLSearchParams(window.location.search).get("next");
+
+  if (
+    !value ||
+    !value.startsWith("/") ||
+    value.startsWith("//") ||
+    /[\\\u0000-\u001f\u007f]/.test(value)
+  ) {
+    return "/";
+  }
+
+  try {
+    const target = new URL(value, window.location.origin);
+
+    if (target.origin !== window.location.origin) {
+      return "/";
+    }
+
+    // Avoid redirecting back into authentication pages.
+    if (/^\/(?:login|register)(?:\/|$)/i.test(target.pathname)) {
+      return "/";
+    }
+
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return "/";
+  }
+}
 
 export default function AuthForm({
   mode,
@@ -17,13 +48,29 @@ export default function AuthForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [nextPath, setNextPath] = useState("/");
+
+  useEffect(() => {
+    setNextPath(getNextPath());
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (!isSignup && params.get("registered") === "1") {
+      setSuccess("Account created successfully. Please log in.");
+    }
+  }, [isSignup]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (loading) return;
+
     setError("");
     setSuccess("");
 
+    const destination = getNextPath();
     const formData = new FormData(event.currentTarget);
+
     const name = String(formData.get("name") || "").trim();
     const email = String(formData.get("email") || "").trim();
     const image = String(formData.get("image") || "").trim();
@@ -63,9 +110,7 @@ export default function AuthForm({
 
       if (result.error) {
         setError(
-          `${result.error.message || "Request failed. Please try again."} (Status: ${
-            result.error.status || "unknown"
-          })`
+          result.error.message || "Request failed. Please try again."
         );
         return;
       }
@@ -76,8 +121,6 @@ export default function AuthForm({
       }
 
       if (isSignup) {
-        // Registration must lead to the Login page.
-        // End any automatically created session first.
         const signOutResult = await authClient.signOut();
 
         if (signOutResult.error) {
@@ -87,17 +130,23 @@ export default function AuthForm({
           return;
         }
 
-        router.push("/login?registered=1");
+        const params = new URLSearchParams({ registered: "1" });
+
+        if (destination !== "/") {
+          params.set("next", destination);
+        }
+
+        router.replace(`/login?${params.toString()}`);
         router.refresh();
         return;
       }
 
       setSuccess("Login successful! Redirecting...");
-      router.push("/");
+      router.replace(destination);
       router.refresh();
     } catch {
       setError(
-        "Could not complete the request. Check the client terminal for the server error."
+        "Could not complete the request. Please check your connection and try again."
       );
     } finally {
       setLoading(false);
@@ -108,6 +157,12 @@ export default function AuthForm({
     "mt-2 w-full rounded-xl border border-[#d6dfd5] bg-white px-4 py-3 text-[#183d30] outline-none focus:border-[#285943] focus:ring-2 focus:ring-[#285943]/20";
 
   const labelClass = "text-sm font-medium text-[#183d30]";
+
+  const alternatePage = isSignup ? "/login" : "/register";
+  const alternateHref =
+    nextPath === "/"
+      ? alternatePage
+      : `${alternatePage}?next=${encodeURIComponent(nextPath)}`;
 
   return (
     <section className="flex min-h-[70vh] items-center justify-center bg-[#faf7ef] px-4 py-16">
@@ -222,12 +277,13 @@ export default function AuthForm({
             {loading ? "Please wait..." : isSignup ? "Register" : "Log in"}
           </button>
         </form>
+
         <GoogleLoginButton isSignup={isSignup} />
 
         <p className="mt-6 text-center text-sm text-[#667168]">
           {isSignup ? "Already have an account? " : "New to BookNook? "}
           <Link
-            href={isSignup ? "/login" : "/register"}
+            href={alternateHref}
             className="font-semibold text-[#234d3b] underline underline-offset-4"
           >
             {isSignup ? "Log in" : "Register"}
